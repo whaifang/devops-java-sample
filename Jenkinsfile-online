@@ -28,6 +28,7 @@ pipeline {
             steps {
                 container ('maven') {
                     sh 'mvn clean test'
+                    sh 'echo test'
                 }
             }
         }
