@@ -10,11 +10,11 @@ pipeline {
     }
 
     environment {
-        DOCKER_CREDENTIAL_ID = 'dockerhub-id'
-        GITHUB_CREDENTIAL_ID = 'github'
+        HARBOR_CREDENTIAL_ID = 'harbor-id'
+        GITHUB_CREDENTIAL_ID = 'github-id'
         KUBECONFIG_CREDENTIAL_ID = 'demo-kubeconfig'
-        REGISTRY = 'docker.io'
-        DOCKERHUB_NAMESPACE = 'docker_username'
+        REGISTRY = '9.30.251.24:30002'
+        DOCKERHUB_NAMESPACE = 'k8s-deploy-images'
         GITHUB_ACCOUNT = 'kubesphere'
         APP_NAME = 'devops-java-sample'
     }
@@ -39,7 +39,7 @@ pipeline {
                 container ('maven') {
                     sh 'mvn -o -Dmaven.test.skip=true -gs `pwd`/configuration/settings.xml clean package'
                     sh 'docker build -f Dockerfile-online -t $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER .'
-                    withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL_ID" ,)]) {
+                    withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$HARBOR_CREDENTIAL_ID" ,)]) {
                         sh 'echo "$DOCKER_PASSWORD" | docker login $REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
                         sh 'docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER'
                     }
